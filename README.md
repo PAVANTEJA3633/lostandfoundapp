@@ -1,59 +1,23 @@
-# lostandfoundapp
+# Lost and Found Map Mobile App
 
-## About This Project
+## Overview
 
-This is a simple Lost and Found Android application developed for SIT708 Task 7.1. The main idea of this app is to help people report lost or found items so that the items can be returned to their owners more easily.
+This project is an Android mobile application developed for Task 9.1P. It is an extension of the Lost and Found app from Task 7.1P. The main purpose of this app is to help users report lost or found items and view their locations on Google Maps.
 
-The app allows a user to create a new advert for an item, save the details, upload an image, view all saved items, filter items by category, and remove an advert when the item has been returned.
+The app allows users to create a lost or found advert, upload an item image, save item details into a local SQLite database, get the current location, and display item locations using map markers. A radius-based search feature is also included so users can view only the items within a selected distance from the current location.
 
-## What the App Can Do
+## Main Features
 
-This app includes the following features:
-
-- Create a new lost or found item advert
-- Select whether the item is Lost or Found
-- Enter item name, phone number, description, date, and location
-- Automatically add the current date and time to the post
-- Choose a category such as Electronics, Pets, Wallets, Keys, Bags, or Other
-- Upload an image for the item
-- Show a preview of the uploaded image
-- Save item details using SQLite database
-- View all lost and found items
-- Filter items based on category
-- Open a selected item on a separate screen
-- Remove the item once it has been returned to the owner
-
-## Screens in the App
-
-### Main Screen
-
-The main screen has two buttons. One button is used to create a new advert, and the other button is used to view all lost and found items.
-
-### Create New Advert Screen
-
-On this screen, the user can enter the details of the lost or found item. The user can select the post type, enter contact details, add a description, choose a category, upload an image, and save the advert.
-
-### Show Items Screen
-
-This screen shows all saved lost and found items. The user can also use the category filter to view only specific types of items, such as Electronics or Wallets.
-
-### Remove Item Screen
-
-When the user selects an item from the list, the app opens a separate screen that shows the item details. If the item has been returned to the owner, the user can click the Remove button to delete the advert from the database.
-
-## Database
-
-The app uses SQLite to store the lost and found item details. The database stores information such as:
-
-- Item ID
-- Lost or Found type
-- Item name
-- Phone number
-- Description
-- Date and time
-- Location
-- Category
-- Image URI
+- Create a lost or found advert
+- Enter item details such as name, phone number, description, date, location, and category
+- Upload an image for the lost or found item
+- Store item details using SQLite database
+- Save latitude and longitude values for item locations
+- Show item locations on Google Maps
+- Display multiple map markers
+- Use current location from the emulator or device
+- Apply radius-based search to show nearby items only
+- Navigate back from the map screen easily
 
 ## Technologies Used
 
@@ -61,53 +25,81 @@ The app uses SQLite to store the lost and found item details. The database store
 - Kotlin
 - XML layouts
 - SQLite database
-- Android Emulator
-- GitHub
+- Google Maps SDK for Android
+- Google Location Services
+- Git and GitHub
 
-## Project Files
+## App Screens
 
-The main files used in this project are:
+### 1. Home Screen
 
-- `MainActivity.kt`  
-  Controls the home screen and opens the other screens.
+The home screen provides three main options:
 
-- `AddItemActivity.kt`  
-  Handles creating a new lost or found advert.
+- Create New Advert
+- Show All Lost and Found Items
+- Show On Map
 
-- `ShowItemsActivity.kt`  
-  Displays all saved items and filters them by category.
+The Show On Map button opens the Google Maps screen where item locations are displayed as markers.
 
-- `RemoveItemActivity.kt`  
-  Shows the selected item details and removes the item from the database.
+### 2. Create New Advert Screen
 
-- `DBHelper.kt`  
-  Handles the SQLite database operations such as saving, reading, filtering, and deleting data.
+This screen allows users to create a lost or found item advert. The user can select whether the item is lost or found, enter item details, choose a category, upload an image, and get the current location.
 
-- `activity_main.xml`  
-  Layout for the main screen.
+The Get Current Location button gets the latitude and longitude from the emulator or device. These coordinates are stored with the advert details.
 
-- `activity_add_item.xml`  
-  Layout for creating a new advert.
+### 3. Show Items Screen
 
-- `activity_show_items.xml`  
-  Layout for showing saved items.
+This screen displays the saved lost and found adverts in list format. Users can view the details of items that have been saved in the local SQLite database.
 
-- `activity_remove_item.xml`  
-  Layout for removing a selected item.
+### 4. Map Screen
 
-## How to Run the App
+The map screen displays Google Maps with item markers. It includes fixed demo markers and saved item markers from the database. The screen also includes a Back button and zoom controls.
 
-1. Download or clone this repository.
-2. Open the project in Android Studio.
-3. Wait for Gradle sync to finish.
-4. Select an Android emulator or connect an Android phone.
-5. Click the Run button.
-6. Use the app to create, view, filter, and remove lost or found items.
+### 5. Radius Search
 
-## Future Improvements
+The radius-based search allows users to enter a distance in kilometres. The app then shows only the item markers that are within the selected radius from the user’s current location.
 
-In the future, this app can be improved by adding user login, cloud database support, map location, search by item name, and push notifications. These features would make the app more useful in real situations.
+## How the Location Feature Works
 
-## Author
+When the user clicks the Get Current Location button, the app gets the current latitude and longitude from the Android emulator or mobile device.
 
-Developed for SIT708 Task 7.1.
+In the emulator, the location depends on the location set in the emulator settings. On a real mobile phone, this would use the phone’s GPS location.
+
+The latitude and longitude values are saved into the SQLite database together with the lost or found item details. These coordinates are later used to show the item location on Google Maps.
+
+## Radius-Based Search
+
+The radius-based search feature filters map markers based on distance.
+
+The user can enter a distance such as:
+
+- 5 km
+- 15 km
+- 25 km
+
+The app calculates the distance between the user's current location and each item location. Only the items within the selected radius are shown on the map.
+
+This feature is useful because users can focus on lost or found items near their current area instead of seeing items that are too far away.
+
+## Project Structure
+
+```text
+app/
+ └── src/
+     └── main/
+         ├── java/com/example/lostandfound/
+         │   ├── MainActivity.kt
+         │   ├── AddItemActivity.kt
+         │   ├── ShowItemsActivity.kt
+         │   ├── RemoveItemActivity.kt
+         │   ├── MapsActivity.kt
+         │   └── DBHelper.kt
+         │
+         ├── res/layout/
+         │   ├── activity_main.xml
+         │   ├── activity_add_item.xml
+         │   ├── activity_show_items.xml
+         │   ├── activity_remove_item.xml
+         │   └── activity_maps.xml
+         │
+         └── AndroidManifest.xml
