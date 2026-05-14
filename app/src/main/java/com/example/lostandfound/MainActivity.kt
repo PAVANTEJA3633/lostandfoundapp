@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
 
         val btnAdd = findViewById<Button>(R.id.btnAdd)
         val btnView = findViewById<Button>(R.id.btnView)
+        val btnMap = findViewById<Button>(R.id.btnMap)
 
         // Open Add Item screen
         btnAdd.setOnClickListener {
@@ -22,6 +23,11 @@ class MainActivity : AppCompatActivity() {
         // Open Show Items screen
         btnView.setOnClickListener {
             startActivity(Intent(this, ShowItemsActivity::class.java))
+        }
+
+        // Open Google Map screen
+        btnMap.setOnClickListener {
+            startActivity(Intent(this, MapsActivity::class.java))
         }
     }
 }

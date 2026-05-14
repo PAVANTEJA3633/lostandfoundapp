@@ -15,7 +15,16 @@ data class LostFoundItem(
     val image: String
 )
 
-class DBHelper(context: Context) : SQLiteOpenHelper(context, "LostFound.db", null, 6) {
+data class MapItem(
+    val id: Int,
+    val type: String,
+    val name: String,
+    val location: String,
+    val latitude: Double,
+    val longitude: Double
+)
+
+class DBHelper(context: Context) : SQLiteOpenHelper(context, "LostFound.db", null, 7) {
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(
@@ -28,7 +37,9 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "LostFound.db", nul
                     "date TEXT," +
                     "location TEXT," +
                     "category TEXT," +
-                    "image TEXT)"
+                    "image TEXT," +
+                    "latitude REAL," +
+                    "longitude REAL)"
         )
     }
 
@@ -45,7 +56,9 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "LostFound.db", nul
         date: String,
         location: String,
         category: String,
-        image: String
+        image: String,
+        latitude: Double,
+        longitude: Double
     ): Boolean {
         val db = writableDatabase
 
@@ -58,6 +71,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "LostFound.db", nul
         values.put("location", location)
         values.put("category", category)
         values.put("image", image)
+        values.put("latitude", latitude)
+        values.put("longitude", longitude)
 
         val result = db.insert("items", null, values)
         db.close()
@@ -112,6 +127,34 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "LostFound.db", nul
                 location = cursor.getString(4),
                 category = cursor.getString(5),
                 image = cursor.getString(6)
+            )
+
+            list.add(item)
+        }
+
+        cursor.close()
+        db.close()
+
+        return list
+    }
+
+    fun getAllItemsForMap(): ArrayList<MapItem> {
+        val list = ArrayList<MapItem>()
+        val db = readableDatabase
+
+        val cursor = db.rawQuery(
+            "SELECT id, type, name, location, latitude, longitude FROM items",
+            null
+        )
+
+        while (cursor.moveToNext()) {
+            val item = MapItem(
+                id = cursor.getInt(0),
+                type = cursor.getString(1),
+                name = cursor.getString(2),
+                location = cursor.getString(3),
+                latitude = cursor.getDouble(4),
+                longitude = cursor.getDouble(5)
             )
 
             list.add(item)

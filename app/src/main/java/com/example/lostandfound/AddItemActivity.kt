@@ -1,12 +1,16 @@
 package com.example.lostandfound
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.LocationServices
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -18,7 +22,12 @@ class AddItemActivity : AppCompatActivity() {
     private var imageSelected = false
     private var imageText = ""
 
+    private var latitude = 0.0
+    private var longitude = 0.0
+    private var locationSelected = false
+
     private lateinit var imgPreview: ImageView
+    private lateinit var etLocation: EditText
 
     private val imagePicker =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
@@ -56,10 +65,11 @@ class AddItemActivity : AppCompatActivity() {
         val etPhone = findViewById<EditText>(R.id.etPhone)
         val etDescription = findViewById<EditText>(R.id.etDescription)
         val etDate = findViewById<EditText>(R.id.etDate)
-        val etLocation = findViewById<EditText>(R.id.etLocation)
+        etLocation = findViewById(R.id.etLocation)
         val spCategory = findViewById<Spinner>(R.id.spCategory)
         val btnUploadImage = findViewById<Button>(R.id.btnUploadImage)
         val btnSave = findViewById<Button>(R.id.btnSave)
+        val btnCurrentLocation = findViewById<Button>(R.id.btnCurrentLocation)
 
         imgPreview = findViewById(R.id.imgPreview)
 
@@ -92,6 +102,10 @@ class AddItemActivity : AppCompatActivity() {
             imagePicker.launch(arrayOf("image/*"))
         }
 
+        btnCurrentLocation.setOnClickListener {
+            getCurrentLocation()
+        }
+
         btnSave.setOnClickListener {
 
             val selectedRadioId = radioGroupType.checkedRadioButtonId
@@ -122,6 +136,11 @@ class AddItemActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            if (!locationSelected) {
+                Toast.makeText(this, "Please click Get Current Location", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (!imageSelected) {
                 Toast.makeText(this, "Please upload image", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -135,7 +154,9 @@ class AddItemActivity : AppCompatActivity() {
                 date,
                 location,
                 category,
-                imageText
+                imageText,
+                latitude,
+                longitude
             )
 
             if (success) {
@@ -144,6 +165,48 @@ class AddItemActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Advert not saved", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun getCurrentLocation() {
+        if (
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                200
+            )
+            return
+        }
+
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+
+            if (location != null) {
+                latitude = location.latitude
+                longitude = location.longitude
+                locationSelected = true
+
+                etLocation.setText("Lat: $latitude, Lng: $longitude")
+
+                Toast.makeText(this, "Current location selected", Toast.LENGTH_SHORT).show()
+            } else {
+                // Default Melbourne location for emulator testing
+                latitude = -37.8136
+                longitude = 144.9631
+                locationSelected = true
+
+                etLocation.setText("Lat: $latitude, Lng: $longitude")
+
+                Toast.makeText(this, "Default Melbourne location selected", Toast.LENGTH_SHORT).show()
+            }
+        }.addOnFailureListener {
+            Toast.makeText(this, "Failed to get location", Toast.LENGTH_SHORT).show()
         }
     }
 }
